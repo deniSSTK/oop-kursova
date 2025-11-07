@@ -4,7 +4,9 @@ import CurrencyEnum from "../../enums/CurrencyEnum";
 
 import argon2 from "argon2";
 import Category from "../../entities/Category";
-import BaseService from "../interfaces/BaseService";
+import BaseService from "./BaseService";
+import TransactionService from "./TransactionService";
+import AccountRoleEnum from "../../enums/AccountRolesEnum";
 
 class AccountService extends BaseService<Account> {
 
@@ -42,17 +44,6 @@ class AccountService extends BaseService<Account> {
         return newAccount;
     }
 
-    async getById(id: string): Promise<Account | null> {
-        const accounts = await this.repo.read();
-        const account = accounts.filter(a => a.id === id)[0];
-
-        return account ? account : null;
-    }
-
-    async getAll(): Promise<Account[]> {
-        return this.repo.read();
-    }
-
     async updateWithTarget(id: string, value: string, target: 'name' | 'secondName' | 'email'): Promise<Account | null> {
         const accounts = await this.repo.read();
         const account = accounts.find(a => a.id === id);
@@ -64,9 +55,9 @@ class AccountService extends BaseService<Account> {
         return account;
     }
 
-    async updateBalance(id: string, amount: number): Promise<Account | null> {
+    async updateBalance(accountId: string, amount: number): Promise<Account | null> {
         const accounts = await this.repo.read();
-        const account = accounts.find(a => a.id === id);
+        const account = accounts.find(a => a.id === accountId);
 
         if (!account) return null;
 

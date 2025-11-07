@@ -1,5 +1,6 @@
 import BaseEntity from "./BaseEntity";
 import CurrencyEnum from "../enums/CurrencyEnum";
+import AccountRoleEnum from "../enums/AccountRolesEnum";
 
 class Account extends BaseEntity {
 

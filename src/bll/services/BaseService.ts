@@ -2,7 +2,7 @@ import BaseEntity from "../../entities/BaseEntity";
 import FileRepository from "../../dal/repositories/FileRepository";
 
 class BaseService<T extends BaseEntity> {
-    readonly repo: FileRepository<T>;
+    protected readonly repo: FileRepository<T>;
 
     constructor(repo: FileRepository<T>) {
         this.repo = repo
@@ -34,8 +34,8 @@ class BaseService<T extends BaseEntity> {
         return all.filter(item => item.id === id)[0]
     }
 
-    getAll(): Promise<T[]> {
-        return this.repo.read();
+    async getAll(): Promise<T[]> {
+        return await this.repo.read();
     }
 }
 

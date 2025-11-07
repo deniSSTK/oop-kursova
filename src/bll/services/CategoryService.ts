@@ -1,23 +1,25 @@
 import Category from "../../entities/Category";
 import FileRepository from "../../dal/repositories/FileRepository";
-import CategoryTypeEnum from "../../enums/CategoryTypeEnum";
-import BaseService from "../interfaces/BaseService";
+import BaseService from "./BaseService";
 
 class CategoryService extends BaseService<Category> {
+
     constructor() {
         super(new FileRepository<Category>(Category.fileName));
     }
 
     async insert(
         name: string,
-        type: CategoryTypeEnum,
         description?: string,
     ): Promise<Category> {
         const newCategory = new Category(
             name,
-            type,
             description,
         )
+
+        if (await this.checkIfExistsByName(name)) {
+            throw  new Error(`Category ${name} already exists`);
+        }
 
         await this.repo.insert(newCategory)
         return newCategory;
@@ -43,16 +45,10 @@ class CategoryService extends BaseService<Category> {
         return await this.update(target);
     }
 
-    async updateType(id: string): Promise<boolean> {
-        const target = await this.getById(id);
-
-        if (!target) return false
-
-        target.type = target.type === CategoryTypeEnum.INCOME ? CategoryTypeEnum.OUTCOME : CategoryTypeEnum.INCOME;
-
-        return await this.update(target);
+    async checkIfExistsByName(name: string): Promise<boolean> {
+        const all = await this.repo.read();
+        return all.find(c => c.name === name) !== undefined
     }
-
 }
 
 export default CategoryService;
