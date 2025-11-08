@@ -3,8 +3,8 @@ import AccountService from "../bll/services/AccountsService";
 import TransactionService from "../bll/services/TransactionService";
 
 import readline from 'readline';
-import {categoryMenuLoop} from "./menuLoops/CategoryMenuLoop";
-import {accountMenuLoop} from "./menuLoops/AccountMenuLoop";
+import categoryMenuLoop from "./menuLoops/CategoryMenuLoop";
+import accountMenuLoop from "./menuLoops/AccountMenuLoop";
 import transactionMenuLoop from "./menuLoops/TransactionMenuLoop";
 
 export const categoryService = new CategoryService();

@@ -1,6 +1,6 @@
 import { categoryService, main, rl } from "../main";
 
-export function categoryMenuLoop() {
+function categoryMenuLoop() {
     console.log(`
         1. Додати категорію
         2. Видалити категорію (по id)
@@ -11,85 +11,100 @@ export function categoryMenuLoop() {
     `);
 
     rl.question('Виберіть опцію: ', async (answer) => {
-        switch(answer) {
+        switch (answer.trim()) {
             case '1':
-                console.log('Вкажіть назву та опис (не обов\'язково) в форматі: назва опис');
-                rl.question('> ', async (input) => {
-                    const [name, ...descriptionParts] = input.split(" ");
-                    const description = descriptionParts.join(" ");
+                rl.question('Вкажіть назву та опис (не обов’язково): ', async (input) => {
+                    const [name, ...descParts] = input.trim().split(" ");
+                    if (!name) {
+                        console.log('Назва обов’язкова');
+                        return categoryMenuLoop();
+                    }
                     try {
-                        await categoryService.insert(name, description);
-                        console.log('Категорія додана');
+                        await categoryService.insert(name, descParts.join(" "));
+                        console.log('✅ Категорію додано');
                     } catch (err: any) {
-                        console.log('Помилка:', err.message);
+                        console.log('❌ Помилка:', err.message);
                     }
                     categoryMenuLoop();
                 });
-                return;
+                break;
 
             case '2':
-                console.log('Вкажіть id категорії для видалення:');
-                rl.question('> ', async (id) => {
+                rl.question('ID категорії для видалення: ', async (id) => {
+                    if (!id) {
+                        console.log('ID обов’язкове');
+                        return categoryMenuLoop();
+                    }
                     try {
                         await categoryService.delete(id);
-                        console.log('Категорія видалена');
+                        console.log('✅ Категорію видалено');
                     } catch (err: any) {
-                        console.log('Помилка:', err.message);
+                        console.log('❌ Помилка:', err.message);
                     }
                     categoryMenuLoop();
                 });
-                return;
+                break;
 
             case '3':
-                console.log('Вкажіть id категорії та нове ім\'я в форматі: id нове_імя');
-                rl.question('> ', async (input) => {
-                    const [id, ...nameParts] = input.split(" ");
-                    const newName = nameParts.join(" ");
+                rl.question('ID та нове ім’я: ', async (input) => {
+                    const [id, ...nameParts] = input.trim().split(" ");
+                    if (!id || nameParts.length === 0) {
+                        console.log('Потрібно вказати id і нове ім’я');
+                        return categoryMenuLoop();
+                    }
                     try {
-                        await categoryService.updateName(id, newName);
-                        console.log('Ім\'я категорії змінено');
+                        await categoryService.updateName(id, nameParts.join(" "));
+                        console.log('✅ Ім’я змінено');
                     } catch (err: any) {
-                        console.log('Помилка:', err.message);
+                        console.log('❌ Помилка:', err.message);
                     }
                     categoryMenuLoop();
                 });
-                return;
+                break;
 
             case '4':
-                console.log('Вкажіть id категорії та новий опис в форматі: id новий_опис');
-                rl.question('> ', async (input) => {
-                    const [id, ...descriptionParts] = input.split(" ");
-                    const newDescription = descriptionParts.join(" ");
+                rl.question('ID та новий опис: ', async (input) => {
+                    const [id, ...descParts] = input.trim().split(" ");
+                    if (!id) {
+                        console.log('Потрібно вказати id і опис');
+                        return categoryMenuLoop();
+                    }
                     try {
-                        await categoryService.updateDescription(id, newDescription);
-                        console.log('Опис категорії змінено');
+                        await categoryService.updateDescription(id, descParts.join(" "));
+                        console.log('✅ Опис змінено');
                     } catch (err: any) {
-                        console.log('Помилка:', err.message);
+                        console.log('❌ Помилка:', err.message);
                     }
                     categoryMenuLoop();
                 });
-                return;
+                break;
 
             case '5':
                 try {
                     const categories = await categoryService.getAll();
-                    console.log('Список категорій:');
-                    categories.forEach(cat => {
-                        console.log(`ID: ${cat.id}, Назва: ${cat.name}, Опис: ${cat.description}`);
-                    });
+                    if (!categories.length) {
+                        console.log('Немає жодної категорії');
+                    } else {
+                        console.log('\nСписок категорій:');
+                        for (const cat of categories) {
+                            console.log(`ID: ${cat.id} | Назва: ${cat.name} | Опис: ${cat.description || '-'}`);
+                        }
+                    }
                 } catch (err: any) {
-                    console.log('Помилка:', err.message);
+                    console.log('❌ Помилка:', err.message);
                 }
                 categoryMenuLoop();
-                return;
+                break;
 
             case '0':
                 main();
-                return;
+                break;
 
             default:
                 console.log('Невірна опція');
+                categoryMenuLoop();
         }
-        categoryMenuLoop();
     });
 }
+
+export default categoryMenuLoop;

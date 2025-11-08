@@ -1,4 +1,5 @@
 import { transactionService, main, rl } from "../main";
+import {parseDateSafe} from "../../utils/Parsers";
 
 function transactionMenuLoop() {
     console.log(`
@@ -19,9 +20,24 @@ function transactionMenuLoop() {
                     const [senderId, receiverId, categoryId, amountStr] = input.split(' ');
                     const amount = parseFloat(amountStr);
 
+                    if (!senderId || !receiverId || !categoryId || isNaN(amount)) {
+                        console.log('❌ Некоректні дані. Формат: senderId receiverId categoryId amount');
+                        return transactionMenuLoop();
+                    }
+
+                    if (amount <= 0) {
+                        console.log('❌ Сума має бути більшою за 0.');
+                        return transactionMenuLoop();
+                    }
+
+                    if (senderId === receiverId) {
+                        console.log('❌ Неможливо відправити транзакцію самому собі.');
+                        return transactionMenuLoop();
+                    }
+
                     try {
                         await transactionService.insert(senderId, receiverId, categoryId, amount);
-                        console.log('Транзакція створена');
+                        console.log('✅ Транзакція створена');
                     } catch (err: any) {
                         console.log('Помилка:', err.message);
                     }
@@ -31,25 +47,47 @@ function transactionMenuLoop() {
                 return;
 
             case '2':
-                console.log("Вкажіть: accountId датаПочатку датаКінця (формат YYYY-MM-DD)");
+                console.log("Вкажіть: accountId датаПочатку датаКінця (YYYY-MM-DD)");
                 rl.question('> ', async (input) => {
                     const [accountId, startStr, endStr] = input.split(' ');
-                    const dateStart = new Date(startStr);
-                    const dateEnd = new Date(endStr);
-                    const transactions = await transactionService.getAllByPeriod(accountId, dateStart, dateEnd);
-                    console.log(transactions.length ? transactions : 'Немає транзакцій за вказаний період');
+                    const dateStart = parseDateSafe(startStr);
+                    const dateEnd = parseDateSafe(endStr);
+
+                    if (!accountId || !dateStart || !dateEnd) {
+                        console.log('❌ Некоректні дані або формат дати.');
+                        return transactionMenuLoop();
+                    }
+
+                    try {
+                        const transactions = await transactionService.getAllByPeriod(accountId, dateStart, dateEnd);
+                        console.log(transactions.length ? transactions : 'Немає транзакцій за вказаний період');
+                    } catch (err: any) {
+                        console.log('Помилка:', err.message);
+                    }
+
                     transactionMenuLoop();
                 });
                 return;
 
             case '3':
-                console.log("Вкажіть: accountId датаПочатку датаКінця (формат YYYY-MM-DD)");
+                console.log("Вкажіть: accountId датаПочатку датаКінця (YYYY-MM-DD)");
                 rl.question('> ', async (input) => {
                     const [accountId, startStr, endStr] = input.split(' ');
-                    const dateStart = new Date(startStr);
-                    const dateEnd = new Date(endStr);
-                    const stats = await transactionService.getStatsByCategories(accountId, dateStart, dateEnd);
-                    console.log(Object.keys(stats).length ? stats : 'Немає статистики');
+                    const dateStart = parseDateSafe(startStr);
+                    const dateEnd = parseDateSafe(endStr);
+
+                    if (!accountId || !dateStart || !dateEnd) {
+                        console.log('❌ Некоректні дані або формат дати.');
+                        return transactionMenuLoop();
+                    }
+
+                    try {
+                        const stats = await transactionService.getStatsByCategories(accountId, dateStart, dateEnd);
+                        console.log(Object.keys(stats).length ? stats : 'Немає статистики');
+                    } catch (err: any) {
+                        console.log('Помилка:', err.message);
+                    }
+
                     transactionMenuLoop();
                 });
                 return;
@@ -57,8 +95,18 @@ function transactionMenuLoop() {
             case '4':
                 console.log("Вкажіть categoryId");
                 rl.question('> ', async (categoryId) => {
-                    const transactions = await transactionService.getByCategoryId(categoryId);
-                    console.log(transactions.length ? transactions : 'Немає транзакцій у цій категорії');
+                    if (!categoryId.trim()) {
+                        console.log('❌ Порожній categoryId.');
+                        return transactionMenuLoop();
+                    }
+
+                    try {
+                        const transactions = await transactionService.getByCategoryId(categoryId);
+                        console.log(transactions.length ? transactions : 'Немає транзакцій у цій категорії');
+                    } catch (err: any) {
+                        console.log('Помилка:', err.message);
+                    }
+
                     transactionMenuLoop();
                 });
                 return;
@@ -67,18 +115,38 @@ function transactionMenuLoop() {
                 console.log("Вкажіть суму (number)");
                 rl.question('> ', async (amountStr) => {
                     const amount = parseFloat(amountStr);
-                    const transactions = await transactionService.getByAmount(amount);
-                    console.log(transactions.length ? transactions : 'Немає транзакцій з такою сумою');
+                    if (isNaN(amount) || amount <= 0) {
+                        console.log('❌ Некоректна сума.');
+                        return transactionMenuLoop();
+                    }
+
+                    try {
+                        const transactions = await transactionService.getByAmount(amount);
+                        console.log(transactions.length ? transactions : 'Немає транзакцій з такою сумою');
+                    } catch (err: any) {
+                        console.log('Помилка:', err.message);
+                    }
+
                     transactionMenuLoop();
                 });
                 return;
 
             case '6':
-                console.log("Вкажіть дату (формат YYYY-MM-DD)");
+                console.log("Вкажіть дату (YYYY-MM-DD)");
                 rl.question('> ', async (dateStr) => {
-                    const date = new Date(dateStr);
-                    const transactions = await transactionService.getByDate(date);
-                    console.log(transactions.length ? transactions : 'Немає транзакцій на цю дату');
+                    const date = parseDateSafe(dateStr);
+                    if (!date) {
+                        console.log('❌ Некоректний формат дати.');
+                        return transactionMenuLoop();
+                    }
+
+                    try {
+                        const transactions = await transactionService.getByDate(date);
+                        console.log(transactions.length ? transactions : 'Немає транзакцій на цю дату');
+                    } catch (err: any) {
+                        console.log('Помилка:', err.message);
+                    }
+
                     transactionMenuLoop();
                 });
                 return;
