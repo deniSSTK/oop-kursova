@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 import * as path from "path";
 import BaseEntity from "../../entities/BaseEntity";
+import {CreatingDirectory, ReadingFile} from "../errors/FileErrors";
 
 class FileRepository<T extends BaseEntity> {
     private readonly filePath: string;
@@ -14,8 +15,8 @@ class FileRepository<T extends BaseEntity> {
 
         try {
             await fs.mkdir(dir, { recursive: true });
-        } catch (e) {
-            throw  new Error(`While creating directory ${dir}: ${e}`);
+        } catch (err) {
+            throw new CreatingDirectory(dir, err)
         }
 
         try {
@@ -31,7 +32,7 @@ class FileRepository<T extends BaseEntity> {
             const data = await fs.readFile(this.filePath, "utf-8");
             return JSON.parse(data);
         } catch (err) {
-            throw  new Error(`While reading the file ${this.filePath}: ${err}`);
+            throw new ReadingFile(this.filePath, err)
         }
     }
 

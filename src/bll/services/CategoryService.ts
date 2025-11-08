@@ -1,6 +1,7 @@
 import Category from "../../entities/Category";
 import FileRepository from "../../dal/repositories/FileRepository";
 import BaseService from "./BaseService";
+import {CategoryAlreadyExists} from "../errors/CategoryErrors";
 
 class CategoryService extends BaseService<Category> {
 
@@ -18,7 +19,7 @@ class CategoryService extends BaseService<Category> {
         )
 
         if (await this.checkIfExistsByName(name)) {
-            throw  new Error(`Category ${name} already exists`);
+            throw new CategoryAlreadyExists(name);
         }
 
         await this.repo.insert(newCategory)
