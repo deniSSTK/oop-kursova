@@ -1,5 +1,5 @@
 import CategoryService from "../bll/services/CategoryService";
-import AccountService from "../bll/services/AccountsService";
+import AccountService from "../bll/services/AccountService";
 import TransactionService from "../bll/services/TransactionService";
 
 import readline from 'readline';

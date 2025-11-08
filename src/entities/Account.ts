@@ -7,13 +7,12 @@ class Account extends BaseEntity {
     name: string;
     secondName: string;
     email: string;
+    passwordHash: string;
 
     readonly role: AccountRoleEnum;
     readonly currency: CurrencyEnum;
 
     balance: number;
-
-    private passwordHash: string;
 
     static readonly fileName: string = "accounts";
 

@@ -3,9 +3,7 @@ import FileRepository from "../../dal/repositories/FileRepository";
 import CurrencyEnum from "../../enums/CurrencyEnum";
 
 import argon2 from "argon2";
-import Category from "../../entities/Category";
 import BaseService from "./BaseService";
-import TransactionService from "./TransactionService";
 import AccountRoleEnum from "../../enums/AccountRolesEnum";
 
 class AccountService extends BaseService<Account> {

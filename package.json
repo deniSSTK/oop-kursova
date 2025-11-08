@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "argon2": "^0.44.0",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "vitest": "^4.0.8"
   },
   "devDependencies": {
     "@types/node": "^24.10.0",

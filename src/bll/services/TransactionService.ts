@@ -2,7 +2,7 @@ import FileRepository from "../../dal/repositories/FileRepository";
 
 import BaseService from "./BaseService";
 import Transaction from "../../entities/Transaction";
-import AccountService from "./AccountsService";
+import AccountService from "./AccountService";
 import {NotEnoughBalance, UpdatingAccountBalance} from "../errors/TransactionErrors";
 
 class TransactionService extends BaseService<Transaction> {
