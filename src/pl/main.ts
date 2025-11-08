@@ -4,6 +4,8 @@ import TransactionService from "../bll/services/TransactionService";
 
 import readline from 'readline';
 import {categoryMenuLoop} from "./menuLoops/CategoryMenuLoop";
+import {accountMenuLoop} from "./menuLoops/AccountMenuLoop";
+import transactionMenuLoop from "./menuLoops/TransactionMenuLoop";
 
 export const categoryService = new CategoryService();
 export const accountService = new AccountService();
@@ -19,8 +21,6 @@ export function main() {
         1. Управління категоріями
         2. Управління рахунками
         3. Управління витратами та доходами
-        4. Статистика
-        5. Пошук
         0. Вихід
     `)
 
@@ -30,12 +30,10 @@ export function main() {
                 categoryMenuLoop();
                 return;
             case '2':
+                accountMenuLoop();
                 return;
             case '3':
-                return;
-            case '4':
-                return;
-            case '5':
+                transactionMenuLoop();
                 return;
             case '0':
                 rl.close();

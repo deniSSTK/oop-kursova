@@ -13,7 +13,7 @@ export function categoryMenuLoop() {
     rl.question('Виберіть опцію: ', async (answer) => {
         switch(answer) {
             case '1':
-                console.log('Вкажіть назву* та опис (не обов\'язково) в форматі: назва опис');
+                console.log('Вкажіть назву та опис (не обов\'язково) в форматі: назва опис');
                 rl.question('> ', async (input) => {
                     const [name, ...descriptionParts] = input.split(" ");
                     const description = descriptionParts.join(" ");
