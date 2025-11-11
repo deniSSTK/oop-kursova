@@ -2,15 +2,16 @@ import { promises as fs } from "fs";
 import * as path from "path";
 import BaseEntity from "../../entities/BaseEntity";
 import {CreatingDirectory, ReadingFile} from "../errors/FileErrors";
+import IRepository from "../interfaces/RepositoryInterface";
 
-class FileRepository<T extends BaseEntity> {
+class FileRepository<T extends BaseEntity> implements IRepository<T> {
     private readonly filePath: string;
 
     constructor(fileName: string) {
         this.filePath = path.resolve(__dirname, `../data/${fileName}.json`);
     }
 
-    private async ensureFileExists(): Promise<void> {
+    public async ensureFileExists(): Promise<void> {
         const dir = path.dirname(this.filePath);
 
         try {
