@@ -7,7 +7,7 @@ import AccountService from '../../src/bll/services/AccountService'
 import Account from '../../src/entities/Account'
 import CurrencyEnum from '../../src/enums/CurrencyEnum'
 import AccountRoleEnum from '../../src/enums/AccountRolesEnum'
-import { NotEnoughBalance } from '../../src/bll/errors/TransactionErrors'
+import { NotEnoughBalanceException } from '../../src/bll/errors/TransactionErrors'
 import fs from 'fs/promises'
 
 vi.mock('argon2', () => ({
@@ -108,7 +108,7 @@ describe('TransactionService', () => {
 
             await expect(
                 transactionService.insert(sender.id!, receiver.id!, categoryId, amount)
-            ).rejects.toThrow(NotEnoughBalance)
+            ).rejects.toThrow(NotEnoughBalanceException)
 
             const senderBalance = await accountService.getBalanceById(sender.id!)
             const receiverBalance = await accountService.getBalanceById(receiver.id!)
@@ -130,13 +130,13 @@ describe('TransactionService', () => {
 
             await expect(
                 transactionService.insert(zeroBalanceAccount.id!, receiver.id!, categoryId, 10)
-            ).rejects.toThrow(NotEnoughBalance)
+            ).rejects.toThrow(NotEnoughBalanceException)
         })
 
         it('кидає помилку при неіснуючому відправнику', async () => {
             await expect(
                 transactionService.insert('non-existent-id', receiver.id!, categoryId, 100)
-            ).rejects.toThrow(NotEnoughBalance)
+            ).rejects.toThrow(NotEnoughBalanceException)
         })
 
         it('дозволяє повну передачу балансу', async () => {

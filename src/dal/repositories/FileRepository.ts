@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import * as path from "path";
 import BaseEntity from "../../entities/BaseEntity";
-import {CreatingDirectory, ReadingFile} from "../errors/FileErrors";
+import {CreatingDirectoryException, ReadingFileException} from "../errors/FileErrors";
 import IRepository from "../interfaces/RepositoryInterface";
 
 class FileRepository<T extends BaseEntity> implements IRepository<T> {
@@ -17,7 +17,7 @@ class FileRepository<T extends BaseEntity> implements IRepository<T> {
         try {
             await fs.mkdir(dir, { recursive: true });
         } catch (err) {
-            throw new CreatingDirectory(dir, err)
+            throw new CreatingDirectoryException(dir, err)
         }
 
         try {
@@ -33,7 +33,7 @@ class FileRepository<T extends BaseEntity> implements IRepository<T> {
             const data = await fs.readFile(this.filePath, "utf-8");
             return JSON.parse(data);
         } catch (err) {
-            throw new ReadingFile(this.filePath, err)
+            throw new ReadingFileException(this.filePath, err)
         }
     }
 

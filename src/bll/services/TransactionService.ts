@@ -3,7 +3,7 @@ import FileRepository from "../../dal/repositories/FileRepository";
 import BaseService from "./BaseService";
 import Transaction from "../../entities/Transaction";
 import AccountService from "./AccountService";
-import {NotEnoughBalance, UpdatingAccountBalance} from "../errors/TransactionErrors";
+import {NotEnoughBalanceException, UpdatingAccountException} from "../errors/TransactionErrors";
 
 class TransactionService extends BaseService<Transaction> {
 
@@ -22,7 +22,7 @@ class TransactionService extends BaseService<Transaction> {
     ): Promise<Transaction> {
         const senderBalance = await this.accountService.getBalanceById(senderId)
         if (!senderBalance || senderBalance < amount) {
-            throw new NotEnoughBalance(senderId, amount);
+            throw new NotEnoughBalanceException(senderId, amount);
         }
 
         const newTransaction = new Transaction(
@@ -33,9 +33,9 @@ class TransactionService extends BaseService<Transaction> {
         );
 
         if (!await this.accountService.updateBalance(senderId, -amount)) {
-            throw new UpdatingAccountBalance(senderId, -amount);
+            throw new UpdatingAccountException(senderId, -amount);
         } else if (!await this.accountService.updateBalance(receiverId, amount)) {
-            throw new UpdatingAccountBalance(receiverId, amount);
+            throw new UpdatingAccountException(receiverId, amount);
         }
 
         await this.repo.insert(newTransaction)

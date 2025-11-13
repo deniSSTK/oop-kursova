@@ -3,7 +3,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import Category from '../../src/entities/Category'
 import CategoryService from '../../src/bll/services/CategoryService'
-import { CategoryAlreadyExists } from '../../src/bll/errors/CategoryErrors'
+import { CategoryAlreadyExistsException } from '../../src/bll/errors/CategoryErrors'
 import fs from 'fs/promises'
 
 describe('CategoryService', () => {
@@ -41,7 +41,7 @@ describe('CategoryService', () => {
 
         it('кидає помилку при спробі створити категорію з існуючою назвою', async () => {
             await service.insert('Розваги', 'Опис розваг')
-            await expect(service.insert('Розваги', 'Інший опис')).rejects.toThrow(CategoryAlreadyExists)
+            await expect(service.insert('Розваги', 'Інший опис')).rejects.toThrow(CategoryAlreadyExistsException)
         })
 
         it('дозволяє створювати категорії з різними назвами', async () => {
