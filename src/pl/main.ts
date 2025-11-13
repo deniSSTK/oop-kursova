@@ -1,13 +1,16 @@
 import readline from 'readline';
 import MainMenuLoop from "./menuLoops/MainMenuLoop";
+
 import Parser from "../utils/Parsers";
 import Validator from "../utils/Validator";
-import TransactionMenuLoop from "./menuLoops/TransactionMenuLoop";
-import TransactionService from "../bll/services/TransactionService";
+
 import AccountService from "../bll/services/AccountService";
-import CategoryMenuLoop from "./menuLoops/CategoryMenuLoop";
 import CategoryService from "../bll/services/CategoryService";
+import TransactionService from "../bll/services/TransactionService";
+
 import AccountMenuLoop from "./menuLoops/AccountMenuLoop";
+import CategoryMenuLoop from "./menuLoops/CategoryMenuLoop";
+import TransactionMenuLoop from "./menuLoops/TransactionMenuLoop";
 
 export const rl = readline.createInterface({
     input: process.stdin,
