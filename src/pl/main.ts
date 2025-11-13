@@ -1,48 +1,33 @@
-import CategoryService from "../bll/services/CategoryService";
-import AccountService from "../bll/services/AccountService";
-import TransactionService from "../bll/services/TransactionService";
-
 import readline from 'readline';
-import categoryMenuLoop from "./menuLoops/CategoryMenuLoop";
-import accountMenuLoop from "./menuLoops/AccountMenuLoop";
-import transactionMenuLoop from "./menuLoops/TransactionMenuLoop";
-
-export const categoryService = new CategoryService();
-export const accountService = new AccountService();
-export const transactionService = new TransactionService(accountService);
+import MainMenuLoop from "./menuLoops/MainMenuLoop";
+import Parser from "../utils/Parsers";
+import Validator from "../utils/Validator";
+import TransactionMenuLoop from "./menuLoops/TransactionMenuLoop";
+import TransactionService from "../bll/services/TransactionService";
+import AccountService from "../bll/services/AccountService";
+import CategoryMenuLoop from "./menuLoops/CategoryMenuLoop";
+import CategoryService from "../bll/services/CategoryService";
+import AccountMenuLoop from "./menuLoops/AccountMenuLoop";
 
 export const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-export function main() {
-    console.log(`
-        1. Управління категоріями
-        2. Управління рахунками
-        3. Управління витратами та доходами
-        0. Вихід
-    `)
+const parser = new Parser();
+const validator = new Validator();
 
-    rl.question('Виберіть опцію: ', async (answer) => {
-        switch(answer) {
-            case '1':
-                categoryMenuLoop();
-                return;
-            case '2':
-                accountMenuLoop();
-                return;
-            case '3':
-                transactionMenuLoop();
-                return;
-            case '0':
-                rl.close();
-                return;
-            default:
-                console.log('Невірна опція');
-        }
-        main();
-    });
-}
+const accountService = new AccountService();
+const categoryService = new CategoryService();
+const transactionService = new TransactionService(accountService);
 
-main();
+let menuLoop: MainMenuLoop;
+const getMainLoop = () => menuLoop;
+
+const accountMenuLoop = new AccountMenuLoop(validator, accountService, getMainLoop);
+const categoryMenuLoop = new CategoryMenuLoop(categoryService, getMainLoop);
+const transactionMenuLoop = new TransactionMenuLoop(parser, transactionService, getMainLoop);
+
+menuLoop = new MainMenuLoop(accountMenuLoop, categoryMenuLoop, transactionMenuLoop);
+
+menuLoop.start();
