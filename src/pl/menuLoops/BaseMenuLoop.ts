@@ -8,7 +8,7 @@ abstract class BaseMenuLoop implements IMenuLoop {
         this.options()
     }
 
-    options(): void { }
+    options(): void {}
 }
 
 export default BaseMenuLoop;
